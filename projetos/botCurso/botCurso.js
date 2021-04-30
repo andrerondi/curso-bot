@@ -27,4 +27,47 @@ bot.start(async ctx => {
     await ctx.replyWithMarkdown(`_Posso te ajudar em algo?_`, tecladoOpcoes)
 })
 
+bot.hears('O que são bots?', ctx => {
+    ctx.replyWithMarkdown('Bots são bla, bla, bla...\n_Algo mais?_', tecladoOpcoes)
+})
+
+bot.hears('O que verei no curso?', async ctx => {
+    await ctx.replyWithMarkdown('No *curso* ... tb vamos criar *3 projetos*:')
+    await ctx.reply('1. Um bot que vai gerenciar a sua lista de compras')
+    await ctx.reply('2. Um bot que vai te permitir cadastrar seus eventos')
+    await ctx.reply('3. E você verá cpmp eu fui feito, isso mesmo, você poderá fazer uma cópia de min')
+    await ctx.replyWithMarkdown('\n\n_Algo mais?_', tecladoOpcoes)
+})
+
+bot.hears('Posso mesmo automatizar tarefas?', async ctx => {
+    await ctx.replyWithMarkdown('Claro que sim, o bot servirá...\nQuer uma palhinha?', botoes)
+})
+
+bot.hears('Como comprar o curso?', ctx => {
+    ctx.replyWithMarkdown('Que bom... [link](https://www.cod3r.com.br/', tecladoOpcoes)
+})
+
+bot.action('n', ctx => {
+    ctx.reply('Ok, não precisa serr grosso :(', tecladoOpcoes)
+})
+
+bot.action('s', async ctx => {
+    await ctx.reply(`Que legal, tente me enviar a sua localização, ou escreva uma mensagem qualquer...`, localizacao)
+})
+
+bot.hears(/mensagem qualquer/i, ctx => {
+    ctx.reply('Essa piada é velha, tenta outra...', tecladoOpcoes)
+})
+
+bot.on('text', async ctx => {
+    let msg = ctx.message.text
+    msg = msg.split('').reverse().join('')
+    await ctx.reply(`A sua mensagem, ao contrário é: ${msg}`)
+    await ctx.reply('Isso mostra que eu consigo ler o que escreve e processar sua mensagem', tecladoOpcoes)
+})
+
+bot.on('location', async ctx => {
+    
+})
+
 bot.startPolling()
