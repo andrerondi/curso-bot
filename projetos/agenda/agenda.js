@@ -3,7 +3,15 @@ const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const Markup = require('telegraf/markup')
 const moment = require('moment')
-const { getAgenda, getTarefa } = require('./agendaServices')
+const { 
+    getAgenda,
+    getTarefa,
+    getTarefas,
+    getConcluidas,
+    incluirTarefa,
+    concluirTarefa,
+    excluirTarefa,
+ } = require('./agendaServices')
 
 const bot = new Telegraf(env.token)
 
@@ -18,7 +26,7 @@ const formatarData = data =>
 const exibirTarefa = async (ctx, tarefaId, novaMsg = false) => {
     const tarefa = await getTarefa(tarefaId)
     const conclusao = tarefa.dt_conclusao ?
-        `\n<b>Concluída em:</b> ${formatarData(tarefa.dt_previsao)}${conclusao}` : ''
+        `\n<b>Concluída em:</b> ${formatarData(tarefa.dt_conclusao)}` : ''
     const msg = `
         <b>${tarefa.descricao}</b>
         <b>Previsão:</b> ${formatarData(tarefa.dt_previsao)}${conclusao}
@@ -55,10 +63,52 @@ bot.command('dia', async ctx => {
     ctx.reply(`Aqui está a sua agenda do dia`, botoesAgenda(tarefas))
 })
 
+bot.command('amanha', async ctx => {
+    const tarefas = await getAgenda(moment().add({ day: 1 }))
+    ctx.reply(`Aqui está a sua agenda até amanhã`, botoesAgenda(tarefas))
+})
+
+bot.command('semana', async ctx => {
+    const tarefas = await getAgenda(moment().add({ week: 1 }))
+    ctx.reply(`Aqui está a sua agenda da semana`, botoesAgenda(tarefas))
+})
+
+bot.command('concluidas', async ctx => {
+    const tarefas = await getConcluidas()
+    ctx.reply(`Estas são as tarefas que você já concluiu`, botoesAgenda(tarefas))
+})
+
+bot.command('tarefas', async ctx => {
+    const tarefas = await getTarefas()
+    ctx.reply(`Estas são as tarefas sem data definida`, botoesAgenda(tarefas))
+})
+
 // ---------- Actions do Bot
 
 bot.action(/mostrar (.+)/, async ctx => {
     await exibirTarefa(ctx, ctx.match[1])
+})
+
+bot.action(/concluir (.+)/, async ctx => {
+    await concluirTarefa(ctx.match[1])
+    await exibirTarefa(ctx, ctx.match[1])
+    await ctx.reply('Tarefa Concluída')
+})
+
+bot.action(/excluir (.+)/, async ctx => {
+    await excluirTarefa(ctx.match[1])
+    await ctx.editMessageText('Tarefa Excluída')
+})
+
+//----------- Inserir Tarefa
+
+bot.on('text', async ctx => {
+    try {
+        const tarefa = await incluirTarefa(ctx.update.message.text)
+        await exibirTarefa(ctx, tarefa.id, true)
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 bot.startPolling()
