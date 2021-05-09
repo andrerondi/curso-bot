@@ -1,2 +1,2 @@
 # curso-bot
-  Construinfdo um ChatBot no Telegram
+  Construindo um ChatBot no Telegram
