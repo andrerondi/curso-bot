@@ -41,6 +41,20 @@ const excluirTarefa = async id => {
     await axios.delete(`${baseUrl}/${id}`)
 }
 
+const atualizarDataTarefa = async (idTarefa, data) => {
+    const tarefa = await getTarefa(idTarefa)
+    const res = await axios.put(`${baseUrl}/${idTarefa}`,
+        { ...tarefa, dt_previsao: data.format('YYYY-MM-DD') })
+    return res.data
+}
+
+const atualizarObsTarefa = async (idTarefa, obs) => {
+    const tarefa = await getTarefa(idTarefa)
+    const res = await axios.put(`${baseUrl}/${idTarefa}`,
+        { ...tarefa, observacao: obs })
+    return res.data
+}
+
 module.exports = {
     getAgenda,
     getTarefa,
@@ -49,4 +63,6 @@ module.exports = {
     incluirTarefa,
     concluirTarefa,
     excluirTarefa,
+    atualizarDataTarefa,
+    atualizarObsTarefa
 }
